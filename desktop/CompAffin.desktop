@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=CompAffin
+Comment=Computations of two affine spaces
+Comment[de]=Lagebeziehung zweier affiner Räume
+Exec=CompAffin
+Icon=affin.png
+Keywords=Math
+Terminal=false
+Type=Application
+Categories=Math;
