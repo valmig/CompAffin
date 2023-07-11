@@ -13,7 +13,7 @@ objects = CompAffinApp.o CompAffinMain.o CompAffin.o
 OBJECTS = $(addprefix $(OBJ)/, $(objects))
 
 
-$(BIN)/LGS: create_dirs $(OBJECTS)
+$(BIN)/CompAffin: create_dirs $(OBJECTS)
 	${CXX} -o $@ $(OBJECTS) $(LDFLAGS)
 
 
