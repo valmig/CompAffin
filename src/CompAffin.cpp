@@ -4,6 +4,7 @@
 #include <thread>
 #include <rational.h>
 #include <LA.h>
+#include <numbers.h>
 
 //--------------------------------------------------------
 wxFrame *MyFrame=NULL;
@@ -32,6 +33,47 @@ std::string filesep="/", valdir = val::CurrentHomeDir() + "/Library/Application 
 //--------------------------------------------------------
 
 wxDEFINE_EVENT(MY_EVENT, MyThreadEvent);
+
+
+val::integer sqrt(const val::integer& n)
+{
+ using namespace val;
+ integer a,a1,c,d,b=n;
+
+ while ((d=(b-a))>1) {
+	 a1=a+d/integer(2);
+	 c=a1*a1;
+	 if (c>n) b=std::move(a1);
+	 else a=std::move(a1);
+ }
+ if ((b*b)>n) return a;
+ else return b;
+}
+
+// sqrt(r) = c * sqrt(ri)
+void rationalizedenominator(const val::rational &r, val::rational &c, val::integer &ri)
+{
+    val::integer one(1);
+    c = val::rational(one,r.denominator());
+    ri = r.denominator() * r.nominator();
+    val::integer b = sqrt(ri);
+    if (ri == one) return;
+    if (b*b == ri) {
+        ri = one;
+        c *= b;
+        return;
+    }
+    if (ri.length() < 2) {
+        val::integer q;
+        for (val::integer p = 2; p < b; p = val::nextprime(p+one)) {
+            q = p*p;
+            while (ri % q == 0) {
+                ri/=q;
+                c*=p;
+            }
+        }
+    }
+}
 
 
 void WriteText(const std::string& s,int O)
@@ -177,7 +219,7 @@ void ComputeProjections(const val::affinspace<val::rational> &A, const val::matr
     if (A1.dimension()>0) s+= "\n + < ";
     else s+="\n";
     for (i = 0; i < A1.dimension(); i++) {
-        s+=ToString(P * A1.getVspace()(i));
+        s+=val::ToString(P * A1.getVspace()(i));
         if (i == A1.dimension() - 1) s+=" >\n";
         else s+="\n        ";
     }
@@ -187,7 +229,7 @@ void ComputeProjections(const val::affinspace<val::rational> &A, const val::matr
     if (A1.dimension()>0) s+= "\n + < ";
     else s+="\n";
     for (i = 0; i < A1.dimension(); i++) {
-        s+=ToString(R * A1.getVspace()(i));
+        s+=val::ToString(R * A1.getVspace()(i));
         if (i == A1.dimension() - 1) s+=" >\n";
         else s+="\n        ";
     }
@@ -232,10 +274,18 @@ void CompAffinMain(std::string& I_1,std::string& I_2)
     intersects=ComputeIntersection(A1,A2);
     if (!intersects && A1.globaldim()>0 && A2.globaldim()>0) {
         val::vector<val::rational> P,Q;
-        val::rational squaredist;
+        val::rational squaredist, c;
+        val::integer ri;
+        std::string s;
 
         squaredist=A1.squaredistance(A2,P,Q);
-        WriteText("\n Abstand d(A1,A2) =  sqrt( "+val::ToString(squaredist) + " )\n");
+        rationalizedenominator(squaredist,c,ri);
+
+        s = val::ToString(c);
+        if (ri != val::integer(1)) s += "*sqrt(" + val::ToString(ri) + ") = " + val::ToString(double(c) * val::sqrt(double(ri)));
+
+
+        WriteText("\n Abstand d(A1,A2) =  " + s + "\n");
         WriteText("\nLotfusspunkt bei A1:\n" + ToString(P) + "\n");
         WriteText("\nLotfusspunkt bei A2:\n" + ToString(Q));
     }
