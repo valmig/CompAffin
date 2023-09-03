@@ -3,8 +3,7 @@
  * Purpose:   Code for Application Frame
  * Author:    Miguel Valbuena ()
  * Created:   2016-09-26
- * Copyright: Miguel Valbuena ()
- * License:
+ * License:   GPL v3.0
  **************************************************************/
 
 #include "CompAffinMain.h"
