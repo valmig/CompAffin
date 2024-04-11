@@ -47,3 +47,4 @@ uninstall:
 	rm -r $(ICONDIR)
 	rm -f $(PREFIX)/bin/CompAffin
 	rm -f $(DESKTOPDIR)/CompAffin.desktop
+
