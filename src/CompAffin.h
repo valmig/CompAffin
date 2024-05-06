@@ -16,9 +16,6 @@ extern wxFrame *MyFrame;
 extern std::string Input_1,Input_2,filesep,settingsfile,settingsdir,valdir,iconpath,alticonpath;
 extern int errorcomputed;
 
-
-
-
 // --------------------------------------------------------------------------------------
 
 class MyThreadEvent;
@@ -38,13 +35,16 @@ public:
 	// Required for sending with wxPostEvent()
 	wxEvent* Clone() const { return new MyThreadEvent(*this); }
 
-	std::string GetMessage() const { return message; }
+	//std::string
+    wxString GetMessage() const { return message; }
 	int GetOutput() const {return Output;}
-	void SetMessage(const std::string &s) {message=s;}
+	//void SetMessage(const std::string &s) {message=s;}
+	void SetMessage(const wxString &s) {message=s;}
 	void SetOutput(int a) {Output=a;}
 
 private:
-	std::string message;
+	//std::string
+    wxString message;
 	int Output;
 };
 
@@ -53,13 +53,13 @@ enum {IdOutput,IdButtonOK,IdError};
 // -----------------------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------------------
-void WriteText(const std::string&,int O=0);
+void WriteText(const wxString&,int O=0);
 void ButtonEnable();
 void Error(const char*);
 // -------------------------------------------------------------------------------------------
 
 
-// R�ckgabe: 1 falls Eingabetyp vom Typ vector, 2 falls vom Typ Matrix:
+// Rückgabe: 1 falls Eingabetyp vom Typ vector, 2 falls vom Typ Matrix:
 int getstringready(std::string &s);
 
 /*
@@ -313,15 +313,15 @@ int ComputeIntersection(const val::affinspace<T> &A1,const val::affinspace<T> &A
     Type = A1.intersection(A2,X);
 
     if (Type==val::affinspace<T>::WINDSCHIEF) {
-        WriteText("Raeume sind windschief zueinader!\n");
+        WriteText(L"Räume sind windschief zueinader!\n");
         return 0;
     }
     else if (Type==val::affinspace<T>::PARALLEL) {
-        WriteText("Raeume sind parallel!\n");
+        WriteText(L"Räume sind parallel!\n");
         return 0;
     }
     else if (Type==val::affinspace<T>::DISJOINT) {
-        WriteText("Raeume sind disjunkt!\n");
+        WriteText(L"Räume sind disjunkt!\n");
         return 0;
     }
     else if (Type==val::affinspace<T>::SUBSPACE) {
@@ -333,12 +333,12 @@ int ComputeIntersection(const val::affinspace<T> &A1,const val::affinspace<T> &A
         return 1;
     }
     else if (Type==val::affinspace<T>::EQUAL) {
-        WriteText("Raeume sind identisch!\n");
+        WriteText(L"Räume sind identisch\n");
         return 1;
     }
     else {
-        int i,j,r=X.numberofrows();
-        std::string s="";
+        int i,j,r=X.numberofrows(), n = A1.globaldim();
+        wxString s="";
         s+="Schnitt-Raum:\n";
         if (r > 1 && A1.globaldim() < 6) makeprimitiv(X,1);
         for (j=0;j<X.numberofcolumns();j++) s+=val::ToString(X(0,j))+ "  ";
@@ -348,6 +348,22 @@ int ComputeIntersection(const val::affinspace<T> &A1,const val::affinspace<T> &A
             for (j=0;j<X.numberofcolumns();j++) s+="  "+ val::ToString(X(i,j));
             if (i==X.numberofrows()-1) s+="  >\n";
             else s+="\n";
+        }
+        if (n >= 2 && n <=3 && A1.dimension() != 0 && A1.dimension() != n && A2.dimension() !=0 && A2.dimension() != n) {
+            val::vector<T> r1, r2;
+            double angle, r12, nr1, nr2;
+            if (A1.dimension() == 1) r1 = A1.getVspace()[0];
+            else r1 = A1.getOrthSpace()[0];
+            if (A2.dimension() == 1) r2 = A2.getVspace()[0];
+            else r2 = A2.getOrthSpace()[0];
+            r12 = (r1) *  (r2);
+            nr1 = (r1) *  (r1); nr2 = (r2) *  (r2);
+            //std::cout << r1 << std::endl << r2 << std::endl;
+            //std::cout << std::endl << r12 << " , " << nr1 << " , " << nr2 << std::endl;
+            angle = val::arccos(val::abs(r12)/val::sqrt(nr1*nr2)) * 180/val::PI;
+            angle = val::round(angle,2);
+            if (A1.dimension() != A2.dimension()) angle = 90 - angle;
+            s += "\nSchnittwinkel: " + val::ToString(angle) + _T("°\n");
         }
         WriteText(s);
         return 1;

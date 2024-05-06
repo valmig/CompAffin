@@ -30,6 +30,8 @@ std::string filesep="/", valdir = val::CurrentHomeDir() + "/Library/Application 
             alticonpath = val::GetExeDir() + "/../Resources/affin.xpm";
 #endif // __APPLE__
 
+
+
 //--------------------------------------------------------
 
 wxDEFINE_EVENT(MY_EVENT, MyThreadEvent);
@@ -56,7 +58,7 @@ void rationalizedenominator(const val::rational &r, val::rational &c, val::integ
     val::integer one(1);
     c = val::rational(one,r.denominator());
     ri = r.denominator() * r.nominator();
-    val::integer b = sqrt(ri);
+    val::integer b = ::sqrt(ri);
     if (ri == one) return;
     if (b*b == ri) {
         ri = one;
@@ -76,7 +78,7 @@ void rationalizedenominator(const val::rational &r, val::rational &c, val::integ
 }
 
 
-void WriteText(const std::string& s,int O)
+void WriteText(const wxString& s,int O)
 {
     if (MyFrame==NULL) return;
     MyThreadEvent event(MY_EVENT,IdOutput);
@@ -150,7 +152,7 @@ void makeprimitiv(val::matrix<val::rational> &A, int k)
 
 // -------------------------------------------------------------
 
-// Rückgabe: 1 falls Eingabetyp vom Typ vector, 2 falls vom Typ Matrix:
+// RÃ¼ckgabe: 1 falls Eingabetyp vom Typ vector, 2 falls vom Typ Matrix:
 int getstringready(std::string &s)
 {
 

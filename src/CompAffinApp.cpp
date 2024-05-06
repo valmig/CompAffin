@@ -18,6 +18,8 @@ IMPLEMENT_APP(CompAffinApp)
 bool CompAffinApp::OnInit()
 {
     //(*AppInitialize
+    //wxLocale* locale = new wxLocale();
+    //locale->Init(wxLANGUAGE_GERMAN, wxLOCALE_LOAD_DEFAULT);
     bool wxsOK = true;
     wxInitAllImageHandlers();
     if ( wxsOK )
